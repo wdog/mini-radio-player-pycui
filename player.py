@@ -77,7 +77,7 @@ class Player:
             info.append(media.get_meta(12) if media.get_meta(12) else '')
         except Exception as e:
             logging.warn(e)
-            info = ['Loading...', '', '']
+            info = [' - ', ' - ', ' - ']
 
         return info
 
