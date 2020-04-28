@@ -25,10 +25,14 @@ class App:
 
         self.master.status_bar.set_color(py_cui.BLACK_ON_GREEN)
         # grid station
-        self.pnl_stations = self.master.add_scroll_menu('STATIONS', 0, 0,
-                                                        row_span=10,
-                                                        column_span=5)
+        self.pnl_stations = \
+            self.master.add_scroll_menu_extra('STATIONS', 0, 0,
+                                              row_span=10,
+                                              column_span=5)
+
         self.pnl_stations.set_color(py_cui.GREEN_ON_BLACK)
+        self.pnl_stations.set_item_selected_color(py_cui.BLACK_ON_GREEN)
+
         self.pnl_stations.set_focus_text('Up/down to scroll, Enter to play,\
                                          Esc to exit.')
 
@@ -92,8 +96,6 @@ if __name__ == '__main__':
                         datefmt='%H:%M:%S', level=logging.DEBUG)
     root = PyCUIExtra(15, 6)
     root.set_title('Mini-Radio-Player 3.0')
-    ll(root.status_bar.__dict__)
-    # root.set_title_color.set_color(py_cui.RED_ON_BLACK)
     root.toggle_unicode_borders()
     app = App(root)
     root.start()
