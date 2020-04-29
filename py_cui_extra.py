@@ -1,5 +1,4 @@
 import py_cui
-import py_cui.widgets as widgets
 import logging
 
 
@@ -40,6 +39,8 @@ class PyCUIExtra(py_cui.PyCUI):
 
 class ScrollMenuColors(py_cui.widgets.ScrollMenu):
 
+    _current = -1
+
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -58,19 +59,41 @@ class ScrollMenuColors(py_cui.widgets.ScrollMenu):
             else:
                 if counter >= self._height - self._pady - 1:
                     break
-                if line_counter == self._selected_item:
+                # running
+                if line_counter == self._current:
+                    self._renderer.set_color_mode(self._item_active_color)
+                    self._renderer.draw_text(self, "  " + line,
+                                             self._start_y + counter,
+                                             bordered=False)
+                # current position
+                elif line_counter == self._selected_item:
                     self._renderer.set_color_mode(self._item_selected_color)
-                    self._renderer.draw_text(self, line,
-                                             self._start_y + counter)
-                    self._renderer.set_color_mode(self._color)
+                    self._renderer.draw_text(self, "  " + line,
+                                             self._start_y + counter,
+                                             bordered=False)
+                    self._renderer.unset_color_mode(self._item_selected_color)
                 else:
+                    self._renderer.set_color_mode(self._color)
                     self._renderer.draw_text(self, line,
                                              self._start_y + counter)
+                    self._renderer.unset_color_mode(self._color)
+
                 counter = counter + 1
                 line_counter = line_counter + 1
         self._renderer.unset_color_mode(self._color)
         self._renderer.reset_cursor(self)
 
     def set_item_selected_color(self, color):
-        logging.info(color)
         self._item_selected_color = color
+
+    def set_item_active_color(self, color):
+        self._item_active_color = color
+
+    def set_current(self, value):
+        self._current = value
+
+    def _handle_key_press(self, key_pressed):
+        super()._handle_key_press(key_pressed)
+
+        if key_pressed == py_cui.keys.KEY_ENTER:
+            self.set_current(self._selected_item)
