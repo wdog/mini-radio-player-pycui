@@ -1,9 +1,15 @@
 import py_cui
+import curses
+"""
+File: py_cui_extra.py
+Author: wdog
+Github: https://github.com/wdog
+Description: PyCUI extra funcs
+"""
 
 
 class PyCUIExtra(py_cui.PyCUI):
     """description"""
-
     def __init__(self, *args, **keywords):
         super().__init__(*args, **keywords)
         self._title_bar.set_color(py_cui.BLACK_ON_GREEN)
@@ -113,10 +119,26 @@ class ScrollMenuColors(py_cui.widgets.ScrollMenu):
         self._current = value
 
     def _handle_key_press(self, key_pressed):
+
         super()._handle_key_press(key_pressed)
 
         if key_pressed == py_cui.keys.KEY_ENTER:
             self.set_current(self._selected_item)
+
+        if key_pressed == curses.KEY_NPAGE:
+            if self._selected_item + self._height - 2 < len(self._view_items):
+                self._selected_item += self._height - 2
+                self._top_view = self._selected_item
+                self._draw()
+            if self._selected_item > len(self._view_items):
+                self._selected_item = len(self._view_items) - 1
+
+        if key_pressed == curses.KEY_PPAGE:
+            self._selected_item -= self._height - 2
+            self._top_view = self._selected_item
+            self._draw()
+            if self._selected_item < 0:
+                self._selected_item = 0
 
 
 class Slider(py_cui.widgets.Label):
@@ -135,10 +157,9 @@ class Slider(py_cui.widgets.Label):
         self._step = step
 
     def _draw(self):
+
         super()._draw()
         self._renderer.set_color_mode(self._color)
-        if self._draw_border:
-            self._renderer.draw_border(self, with_title=False)
         target_y = self._start_y + int(self._height / 2)
 
         if self._disabled:
@@ -147,7 +168,6 @@ class Slider(py_cui.widgets.Label):
                                      target_y, centered=True,
                                      bordered=self._draw_border)
         else:
-            # "Volume : {}%".format(self._cur_val),
             self._renderer.draw_text(self,
                                      "Volume {}%".format(self._cur_val),
                                      target_y-1, centered=True,
@@ -167,7 +187,6 @@ class Slider(py_cui.widgets.Label):
 
     def set_slider_value(self, val, direction):
         self._cur_val = val + (direction * self._step)
-
         if (self._cur_val <= self._min_val):
             self._cur_val = self._min_val
         if (self._cur_val >= self._max_val):

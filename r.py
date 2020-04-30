@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-
 """
-Main Radio
+File: r.py
 Author: wdog
+Github: https://github.com/wdog
+Description: Main Mini Radio Player
 """
 
 # Import the lib
@@ -15,7 +16,9 @@ from py_cui_extra import PyCUIExtra
 
 class App:
 
+    # object radio selected
     current_station = -1
+    # initial volume
     current_volume = 0
 
     def __init__(self, master):
@@ -28,17 +31,20 @@ class App:
         self.setup()
 
     def setup(self):
-
+        # setup color statu bar bottom
         self.master.status_bar.set_color(py_cui.BLACK_ON_GREEN)
         # grid station
         self.pnl_stations = \
             self.master.add_scroll_menu_extra('STATIONS', 0, 0,
                                               row_span=5,
                                               column_span=3)
-
+        # setup color of station panel
         self.pnl_stations.set_color(py_cui.GREEN_ON_BLACK)
+        # current row
         self.pnl_stations.set_item_selected_color(py_cui.BLACK_ON_GREEN)
+        # radio active
         self.pnl_stations.set_item_active_color(py_cui.BLACK_ON_WHITE)
+        # help messages
         msg = []
         msg.append('⇅ select')
         msg.append('enter play/stop')
@@ -46,30 +52,43 @@ class App:
         msg.append('m mute')
         msg.append('i info')
         msg.append('q quit')
-
         msg = " " + " | ".join(msg)
+        # help message on status bar
         self.pnl_stations.set_focus_text(msg)
+        # activate focus on station panel
         self.master.move_focus(self.pnl_stations)
 
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
                                                     column_span=3)
+
+        # setup color of info panel
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
 
         # slider
         self.slider = self.master.add_slider('volume', 8, 0, column_span=3,
                                              min_val=0, max_val=100, step=5)
+        # -----------
         # handlers
+        # -----------
+
+        # play/pause
         self.pnl_stations.add_key_command(py_cui.keys.KEY_ENTER, self.play)
+        # mute/unmute
         self.pnl_stations.add_key_command(py_cui.keys.KEY_M_LOWER,
                                           self.toggle_mute)
+        # quit
         self.pnl_stations.add_key_command(py_cui.keys.KEY_Q_LOWER,
                                           self.exit_application)
-
+        # volume up
         self.pnl_stations.add_key_command(py_cui.keys.KEY_RIGHT_ARROW,
                                           self.set_volume_up)
+        # volume down
         self.pnl_stations.add_key_command(py_cui.keys.KEY_LEFT_ARROW,
                                           self.set_volume_down)
+        # scroll down
+        # self.pnl_stations.add_key_command(py_cui.keys.KEY_PAGE_UP,
+        #                                  self.pnl_stations.scroll_down)
         # populate station grid
         for station in self.sm.stations:
             self.pnl_stations.add_item('{}'.format(station))
@@ -119,18 +138,11 @@ class App:
         self.player.set_volume(self.current_volume)
 
 
-def ll(txt):
-    logging.debug("---")
-    logging.debug(txt)
-    logging.debug("---")
-    logging.debug("")
-
-
 if __name__ == '__main__':
     logging.basicConfig(filename="app.log",
                         format='%(name)s [%(levelname)s] %(message)s',
                         datefmt='%H:%M:%S', level=logging.DEBUG)
-    logging.info("\n\n\n\n\n\n\n\n\n\n")
+    logging.info("\n----\n")
     # 9 rows x 3 cols
     root = PyCUIExtra(9, 3)
     root.set_title('Mini-Radio-Player 3.0')
