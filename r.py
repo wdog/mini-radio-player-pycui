@@ -78,7 +78,6 @@ class App:
 
     def toggle_mute(self):
         is_muted = self.player.toggle_mute()
-        logging.info(is_muted)
         self.slider.disable(is_muted)
 
     def play(self):

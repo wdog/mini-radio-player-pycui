@@ -121,7 +121,7 @@ class ScrollMenuColors(py_cui.widgets.ScrollMenu):
 
 class Slider(py_cui.widgets.Label):
 
-    _current_val = 0
+    _cur_val = 0
     _disabled = False
     _disabled_text = 'MUTED'
 
@@ -147,21 +147,33 @@ class Slider(py_cui.widgets.Label):
                                      target_y, centered=True,
                                      bordered=self._draw_border)
         else:
+            # "Volume : {}%".format(self._cur_val),
             self._renderer.draw_text(self,
-                                     "Volume : {}%".format(self._current_val),
-                                     target_y, centered=True,
-                                     bordered=self._draw_border)
+                                     "Volume {}%".format(self._cur_val),
+                                     target_y-1, centered=True,
+                                     bordered=self._draw_border,
+                                     )
+
+            fact = (self._max_val - self._min_val) / (self._width - 4)
+            _len = int((self._cur_val - self._min_val)/fact)
+            _bar = " " + "█" * _len
+            self._renderer.draw_text(self,
+                                     _bar,
+                                     target_y, centered=False,
+                                     bordered=self._draw_border,
+                                     )
+
         self._renderer.unset_color_mode(self._color)
 
     def set_slider_value(self, val, direction):
-        self._current_val = val + (direction * self._step)
+        self._cur_val = val + (direction * self._step)
 
-        if (self._current_val <= self._min_val):
-            self._current_val = self._min_val
-        if (self._current_val >= self._max_val):
-            self._current_val = self._max_val
+        if (self._cur_val <= self._min_val):
+            self._cur_val = self._min_val
+        if (self._cur_val >= self._max_val):
+            self._cur_val = self._max_val
 
-        return self._current_val
+        return self._cur_val
 
     def disable(self, disabled=0):
         if disabled == 0:
