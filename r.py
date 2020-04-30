@@ -40,13 +40,14 @@ class App:
         self.pnl_stations.set_item_selected_color(py_cui.BLACK_ON_GREEN)
         self.pnl_stations.set_item_active_color(py_cui.BLACK_ON_WHITE)
         msg = []
-        msg.append(' enter - play/stop')
-        msg.append(' < > volume')
-        msg.append(' m - mute')
-        msg.append(' i - update info')
-        msg.append(' q quit')
+        msg.append('⇅ select')
+        msg.append('enter play/stop')
+        msg.append('⇄ volume')
+        msg.append('m mute')
+        msg.append('i info')
+        msg.append('q quit')
 
-        msg = " | ".join(msg)
+        msg = " " + " | ".join(msg)
         self.pnl_stations.set_focus_text(msg)
         self.master.move_focus(self.pnl_stations)
 
@@ -77,6 +78,7 @@ class App:
 
     def toggle_mute(self):
         is_muted = self.player.toggle_mute()
+        logging.info(is_muted)
         self.slider.disable(is_muted)
 
     def play(self):
@@ -116,7 +118,6 @@ class App:
             self.slider.set_slider_value(self.current_volume, direction)
         # player
         self.player.set_volume(self.current_volume)
-        logging.info(self.current_volume)
 
 
 def ll(txt):

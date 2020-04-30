@@ -87,3 +87,4 @@ class Player:
 
     def toggle_mute(self):
         self.player.audio_toggle_mute()
+        return self.player.audio_get_mute()
