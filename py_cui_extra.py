@@ -1,5 +1,6 @@
 import py_cui
 import curses
+import logging
 """
 File: py_cui_extra.py
 Author: wdog
@@ -11,6 +12,7 @@ Description: PyCUI extra funcs
 class PyCUIExtra(py_cui.PyCUI):
     """description"""
     def __init__(self, *args, **keywords):
+        logging.info("PuCUIExtra")
         super().__init__(*args, **keywords)
         self._title_bar.set_color(py_cui.BLACK_ON_GREEN)
 
@@ -101,7 +103,8 @@ class ScrollMenuColors(py_cui.widgets.ScrollMenu):
                 else:
                     self._renderer.set_color_mode(self._color)
                     self._renderer.draw_text(self, line,
-                                             self._start_y + counter)
+                                             self._start_y + counter,
+                                             bordered=True)
                     self._renderer.unset_color_mode(self._color)
 
                 counter = counter + 1
@@ -126,17 +129,14 @@ class ScrollMenuColors(py_cui.widgets.ScrollMenu):
             self.set_current(self._selected_item)
 
         if key_pressed == curses.KEY_NPAGE:
+            # if next jump is on the groud
             if self._selected_item + self._height - 2 < len(self._view_items):
                 self._selected_item += self._height - 2
                 self._top_view = self._selected_item
-                self._draw()
-            if self._selected_item > len(self._view_items):
-                self._selected_item = len(self._view_items) - 1
 
         if key_pressed == curses.KEY_PPAGE:
             self._selected_item -= self._height - 2
             self._top_view = self._selected_item
-            self._draw()
             if self._selected_item < 0:
                 self._selected_item = 0
 
