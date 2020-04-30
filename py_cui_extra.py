@@ -144,7 +144,12 @@ class Slider(py_cui.widgets.Label):
                                  bordered=self._draw_border)
         self._renderer.unset_color_mode(self._color)
 
-    def set_current_value(self, val):
-        if (val >= self._min_val and val <= self._max_val):
-            self._current_val = val
-            return val
+    def set_slider_value(self, val, direction):
+        self._current_val = val + (direction * self._step)
+
+        if (self._current_val <= self._min_val):
+            self._current_val = self._min_val
+        if (self._current_val >= self._max_val):
+            self._current_val = self._max_val
+
+        return self._current_val

@@ -87,7 +87,9 @@ class Player:
 
     def get_volume(self):
         """ get volume """
-        self.player.volume = self.player.audio_get_volume()
+        if self.is_playing:
+            self.volume = self.player.audio_get_volume()
+            #  self.player.volume = self.player.audio_get_volume()
 
     def toggle_mute(self):
         self.player.audio_toggle_mute()
