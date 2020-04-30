@@ -1,5 +1,4 @@
 import py_cui
-import logging
 
 
 class PyCUIExtra(py_cui.PyCUI):
@@ -8,10 +7,6 @@ class PyCUIExtra(py_cui.PyCUI):
     def __init__(self, *args, **keywords):
         super().__init__(*args, **keywords)
         self._title_bar.set_color(py_cui.BLACK_ON_GREEN)
-
-    def add_scroll_menu_extra2(self, *args, **keywords):
-        new_scroll_menu = super().add_scroll_menu(*args, **keywords)
-        return new_scroll_menu
 
     def add_scroll_menu_extra(self, title, row, column, row_span=1,
                               column_span=1, padx=1, pady=0):
@@ -35,6 +30,31 @@ class PyCUIExtra(py_cui.PyCUI):
         self._logger.debug('Adding widget {} w/ ID {} \
                 of type {}'.format(title, id, str(type(new_scroll_menu))))
         return new_scroll_menu
+
+    def add_slider(self, title, row, column, row_span=1,
+                   column_span=1, padx=1, pady=0, min_val=0, max_val=100,
+                   step=1):
+
+        id = 'Widget{}'.format(len(self._widgets.keys()))
+        slider = Slider(id,
+                        title,
+                        self._grid,
+                        row,
+                        column,
+                        row_span,
+                        column_span,
+                        padx,
+                        pady,
+                        self._logger,
+                        min_val,
+                        max_val,
+                        step
+                        )
+
+        self._widgets[id] = slider
+        if self._selected_widget is None:
+            self.set_selected_widget(id)
+        return slider
 
 
 class ScrollMenuColors(py_cui.widgets.ScrollMenu):
@@ -97,3 +117,34 @@ class ScrollMenuColors(py_cui.widgets.ScrollMenu):
 
         if key_pressed == py_cui.keys.KEY_ENTER:
             self.set_current(self._selected_item)
+
+
+class Slider(py_cui.widgets.Label):
+
+    _current_val = 0
+
+    def __init__(self, id, title, grid, row, column, row_span, column_span,
+                 padx, pady, logger, min_val, max_val, step):
+
+        super().__init__(id, title, grid, row, column,
+                         row_span, column_span, padx, pady, logger)
+        self._min_val = min_val
+        self._max_val = max_val
+        self._step = step
+
+    def _draw(self):
+        super()._draw()
+        self._renderer.set_color_mode(self._color)
+        if self._draw_border:
+            self._renderer.draw_border(self, with_title=False)
+        target_y = self._start_y + int(self._height / 2)
+        self._renderer.draw_text(self,
+                                 "Volume : {}%".format(self._current_val),
+                                 target_y, centered=True,
+                                 bordered=self._draw_border)
+        self._renderer.unset_color_mode(self._color)
+
+    def set_current_value(self, val):
+        if (val >= self._min_val and val <= self._max_val):
+            self._current_val = val
+            return val

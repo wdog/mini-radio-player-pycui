@@ -16,6 +16,7 @@ from py_cui_extra import PyCUIExtra
 class App:
 
     current_station = -1
+    current_volume = 0
 
     def __init__(self, master):
         # create station Manager
@@ -32,7 +33,7 @@ class App:
         # grid station
         self.pnl_stations = \
             self.master.add_scroll_menu_extra('STATIONS', 0, 0,
-                                              row_span=6,
+                                              row_span=5,
                                               column_span=3)
 
         self.pnl_stations.set_color(py_cui.GREEN_ON_BLACK)
@@ -44,9 +45,13 @@ class App:
         self.master.move_focus(self.pnl_stations)
 
         # now playing grid
-        self.pnl_info = self.master.add_scroll_menu('NOW', 6, 0, row_span=3,
+        self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
                                                     column_span=3)
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
+
+        # slider
+        self.volume = self.master.add_slider('volume', 8, 0, column_span=3,
+                                             min_val=0, max_val=100, step=5)
 
         # handlers
         self.pnl_stations.add_key_command(py_cui.keys.KEY_ENTER, self.play)
@@ -54,8 +59,11 @@ class App:
                                           self.toggle_mute)
         self.pnl_stations.add_key_command(py_cui.keys.KEY_Q_LOWER,
                                           self.exit_application)
-        self.pnl_stations.set_help_text('help')
 
+        self.pnl_stations.add_key_command(py_cui.keys.KEY_RIGHT_ARROW,
+                                          self.set_volume_up)
+        self.pnl_stations.add_key_command(py_cui.keys.KEY_LEFT_ARROW,
+                                          self.set_volume_down)
         # populate station grid
         for station in self.sm.stations:
             self.pnl_stations.add_item('{}'.format(station))
@@ -88,6 +96,15 @@ class App:
     def exit_application(self):
         exit()
 
+    def set_volume_up(self):
+        self.current_volume = self.current_volume + 1
+        self.volume.set_current_value(self.current_volume)
+
+    def set_volume_down(self):
+        self.current_volume = self.current_volume - 1
+        self.volume.set_current_value(self.current_volume)
+
+
 def ll(txt):
     logging.debug("---")
     logging.debug(txt)
@@ -99,6 +116,7 @@ if __name__ == '__main__':
     logging.basicConfig(filename="app.log",
                         format='%(name)s [%(levelname)s] %(message)s',
                         datefmt='%H:%M:%S', level=logging.DEBUG)
+    logging.info("\n\n\n\n\n\n\n\n\n\n")
     # 9 rows x 3 cols
     root = PyCUIExtra(9, 3)
     root.set_title('Mini-Radio-Player 3.0')
