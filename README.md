@@ -1,6 +1,10 @@
 # mini-radio-player-pycui
 Mini Radio Player with py-cui and python-vlc
 
+https://pypi.org/project/python-vlc/
+
+https://github.com/jwlodek/py_cui
+
 # with python3 virtualenv
 
 
