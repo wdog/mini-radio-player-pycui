@@ -56,7 +56,7 @@ class App:
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
 
         # slider
-        self.volume = self.master.add_slider('volume', 8, 0, column_span=3,
+        self.slider = self.master.add_slider('volume', 8, 0, column_span=3,
                                              min_val=0, max_val=100, step=5)
         # handlers
         self.pnl_stations.add_key_command(py_cui.keys.KEY_ENTER, self.play)
@@ -76,18 +76,19 @@ class App:
         self.update_info()
 
     def toggle_mute(self):
-        self.player.toggle_mute()
-        # TODO toggle view
+        is_muted = self.player.toggle_mute()
+        self.slider.disable(is_muted)
 
     def play(self):
-        # ll(help(self.pnl_stations))
         idx = self.pnl_stations.get_selected_item()
         self.current_station = self.sm.stations[idx]
 
         self.player.load_station(self.current_station)
         self.player.toggle()
         self.update_info(self.player.get_info())
-        self.current_volume = self.player.volume
+
+        self.current_volume = self.player.get_volume()
+        # get old volume
         self.set_volume(0)
 
     def update_info(self, info=False):
@@ -110,9 +111,12 @@ class App:
         self.set_volume(-1)
 
     def set_volume(self, direction):
+        # slider
         self.current_volume = \
-            self.volume.set_slider_value(self.current_volume, direction)
+            self.slider.set_slider_value(self.current_volume, direction)
+        # player
         self.player.set_volume(self.current_volume)
+        logging.info(self.current_volume)
 
 
 def ll(txt):

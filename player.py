@@ -8,13 +8,11 @@ class Player:
     current_station = None
     is_playing = False
     instance = None
-    volume = 30
 
     def __init__(self):
         try:
             self.instance = vlc.Instance('--verbose=-1')
             self.player = self.instance.media_player_new()
-            self.get_volume()
             # add avent for tittle change
             self.events = self.player.event_manager()
             self.events.event_attach(
@@ -82,14 +80,10 @@ class Player:
         return info
 
     def set_volume(self, vol):
-        """ set volume """
         self.player.audio_set_volume(int(vol))
 
     def get_volume(self):
-        """ get volume """
-        if self.is_playing:
-            self.volume = self.player.audio_get_volume()
-            #  self.player.volume = self.player.audio_get_volume()
+        return self.player.audio_get_volume()
 
     def toggle_mute(self):
         self.player.audio_toggle_mute()

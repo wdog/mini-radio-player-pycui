@@ -122,6 +122,8 @@ class ScrollMenuColors(py_cui.widgets.ScrollMenu):
 class Slider(py_cui.widgets.Label):
 
     _current_val = 0
+    _disabled = False
+    _disabled_text = 'MUTED'
 
     def __init__(self, id, title, grid, row, column, row_span, column_span,
                  padx, pady, logger, min_val, max_val, step):
@@ -138,10 +140,17 @@ class Slider(py_cui.widgets.Label):
         if self._draw_border:
             self._renderer.draw_border(self, with_title=False)
         target_y = self._start_y + int(self._height / 2)
-        self._renderer.draw_text(self,
-                                 "Volume : {}%".format(self._current_val),
-                                 target_y, centered=True,
-                                 bordered=self._draw_border)
+
+        if self._disabled:
+            self._renderer.draw_text(self,
+                                     self._disabled_text,
+                                     target_y, centered=True,
+                                     bordered=self._draw_border)
+        else:
+            self._renderer.draw_text(self,
+                                     "Volume : {}%".format(self._current_val),
+                                     target_y, centered=True,
+                                     bordered=self._draw_border)
         self._renderer.unset_color_mode(self._color)
 
     def set_slider_value(self, val, direction):
@@ -153,3 +162,9 @@ class Slider(py_cui.widgets.Label):
             self._current_val = self._max_val
 
         return self._current_val
+
+    def disable(self, disabled=0):
+        if disabled == 0:
+            self._disabled = True
+        else:
+            self._disabled = False
