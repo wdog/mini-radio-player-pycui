@@ -12,6 +12,9 @@ import logging
 from station import Station
 from player import Player
 from py_cui_extra import PyCUIExtra
+import threading
+from datetime import datetime
+import time
 
 
 class App:
@@ -29,6 +32,16 @@ class App:
         # in the end the Tui
         self.master = master
         self.setup()
+        thread = threading.Thread(target=self.thread_function, args=())
+        thread.daemon = True
+        thread.start()
+
+    def thread_function(self):
+        while True:
+            # self.update_info()
+            if self.player.is_playing:
+                self.update_info(self.player.get_info())
+            time.sleep(1)
 
     def setup(self):
         # setup color statu bar bottom
@@ -97,7 +110,6 @@ class App:
         for station in self.sm.stations:
             self.pnl_stations.add_item('{}'.format(station))
 
-        self.update_info()
 
     def toggle_mute(self):
         is_muted = self.player.toggle_mute()
@@ -120,13 +132,15 @@ class App:
 
     def update_info(self, info=False):
         self.pnl_info.clear()
-
         if not self.player.is_playing:
             info = ['STOPPED', '', '']
 
-        self.pnl_info.add_item('NOW:'.ljust(10, ' ') + info[0])
-        self.pnl_info.add_item('GENERE:'.ljust(10, ' ') + info[1])
-        self.pnl_info.add_item('RADIO:'.ljust(10, ' ') + info[2])
+        self.pnl_info.add_item('NOW:'.ljust(8, ' ') + info[0])
+        self.pnl_info.add_item('GENERE:'.ljust(8, ' ') + info[1])
+        self.pnl_info.add_item('RADIO:'.ljust(8, ' ') + info[2])
+        self.pnl_info.add_item("TIME:   {}".format(
+                               datetime.now().strftime('%X')))
+        # logging.info(self.pnl_info._view_items)
 
     def exit_application(self):
         exit()
@@ -146,9 +160,9 @@ class App:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="app.log",
-                        format='%(name)s [%(levelname)s] %(message)s',
-                        datefmt='%H:%M:%S', level=logging.DEBUG)
+    logging.basicConfig(filename="app.log", format='%(asctime)s - %(name)s - '
+                        '%(levelname)s: %(message)s', datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
     logging.info("\n----\n")
     # 9 rows x 3 cols
     root = PyCUIExtra(9, 3)

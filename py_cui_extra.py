@@ -1,6 +1,7 @@
 import py_cui
 import curses
 import logging
+from datetime import datetime
 """
 File: py_cui_extra.py
 Author: wdog
@@ -170,12 +171,12 @@ class Slider(py_cui.widgets.Label):
         else:
             self._renderer.draw_text(self,
                                      "Volume {}%".format(self._cur_val),
-                                     target_y-1, centered=True,
+                                     target_y - 1, centered=True,
                                      bordered=self._draw_border,
                                      )
 
             fact = (self._max_val - self._min_val) / (self._width - 4)
-            _len = int((self._cur_val - self._min_val)/fact)
+            _len = int((self._cur_val - self._min_val) / fact)
             _bar = " " + "█" * _len
             self._renderer.draw_text(self,
                                      _bar,

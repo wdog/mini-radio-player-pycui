@@ -13,17 +13,8 @@ class Player:
         try:
             self.instance = vlc.Instance('--verbose=-1')
             self.player = self.instance.media_player_new()
-            # add avent for tittle change
-            self.events = self.player.event_manager()
-            self.events.event_attach(
-                vlc.EventType.MediaParsedChanged, self.ParseReceived)
         except Exception as e:
             logging.critical(e)
-
-    def ParseReceived(self):
-        media = self.player.get_media()
-        media.parse_with_options(1, 0)
-        pass
 
     def load_station(self, station):
         """ load new station """
@@ -58,18 +49,9 @@ class Player:
         """ get stream info """
         info = []
 
-        startTime = time.time()
-        waitFor = 1
         try:
-            while True:
-                media = self.player.get_media()
-                media.parse_with_options(1, 0)
-
-                # 0 exists
-                if media.get_meta(12) and len(media.get_meta(12)) > 0 or (
-                        waitFor < (time.time() - startTime)):
-                    break
-
+            media = self.player.get_media()
+            media.parse_with_options(1, 0)
             info.append(media.get_meta(0) if media.get_meta(0) else '')
             info.append(media.get_meta(2) if media.get_meta(2) else '')
             info.append(media.get_meta(12) if media.get_meta(12) else '')
