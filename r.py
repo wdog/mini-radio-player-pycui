@@ -77,6 +77,10 @@ class App:
         # mute/unmute
         self.pnl_stations.add_key_command(py_cui.keys.KEY_M_LOWER,
                                           self.toggle_mute)
+
+        # update info
+        self.pnl_stations.add_key_command(py_cui.keys.KEY_I_LOWER,
+                                          self.update_station_info)
         # quit
         self.pnl_stations.add_key_command(py_cui.keys.KEY_Q_LOWER,
                                           self.exit_application)
@@ -110,6 +114,9 @@ class App:
         self.current_volume = self.player.get_volume()
         # get old volume
         self.set_volume(0)
+
+    def update_station_info(self):
+        self.update_info(self.player.get_info())
 
     def update_info(self, info=False):
         self.pnl_info.clear()
