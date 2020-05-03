@@ -50,13 +50,18 @@ class App:
         self.pnl_stations = \
             self.master.add_scroll_menu_extra('STATIONS', 0, 0,
                                               row_span=5,
-                                              column_span=3)
+                                              column_span=5)
         # setup color of station panel
         self.pnl_stations.set_color(py_cui.GREEN_ON_BLACK)
         # current row
         self.pnl_stations.set_item_selected_color(py_cui.BLACK_ON_GREEN)
         # radio active
         self.pnl_stations.set_item_active_color(py_cui.BLACK_ON_WHITE)
+
+
+        self.master.add_block_label(str(self.get_logo_text()), 0, 5, 4, 4)
+
+
         # help messages
         msg = []
         msg.append('⇅ select')
@@ -73,13 +78,13 @@ class App:
 
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
-                                                    column_span=3)
+                                                    column_span=9)
 
         # setup color of info panel
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
 
         # slider
-        self.slider = self.master.add_slider('volume', 8, 0, column_span=3,
+        self.slider = self.master.add_slider('volume', 8, 0, column_span=9,
                                              min_val=0, max_val=100, step=5)
         # -----------
         # handlers
@@ -158,6 +163,18 @@ class App:
         # player
         self.player.set_volume(self.current_volume)
 
+    def get_logo_text(self):
+        out = ""
+        out += "█▀▄▀█ █ █▄░█ █\n "
+        out += "█░▀░█ █ █░▀█ █\n "
+        out += "\n"
+        out += "█▀█ ▄▀█ █▀▄ █ █▀█\n"
+        out += "█▀▄ █▀█ █▄▀ █ █▄█\n"
+        out += "\n"
+        out += "█▀█ █░░ ▄▀█ █▄█ █▀▀ █▀█\n"
+        out += "█▀▀ █▄▄ █▀█ ░█░ ██▄ █▀▄\n"
+        return out
+
 
 if __name__ == '__main__':
     logging.basicConfig(filename="app.log", format='%(asctime)s - %(name)s - '
@@ -165,7 +182,7 @@ if __name__ == '__main__':
                         level=logging.DEBUG)
     logging.info("\n----\n")
     # 9 rows x 3 cols
-    root = PyCUIExtra(9, 3)
+    root = PyCUIExtra(9, 9)
     root.set_title('Mini-Radio-Player 3.0')
     root.toggle_unicode_borders()
     app = App(root)
