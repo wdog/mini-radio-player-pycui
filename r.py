@@ -24,7 +24,7 @@ class App:
     # object radio selected
     current_station = -1
     # initial volume
-    current_volume = 0
+    current_volume = 30
 
     def __init__(self, master):
 
@@ -41,15 +41,16 @@ class App:
 
     def thread_function(self):
         while True:
-            # self.update_info()
             if self.player.is_playing:
                 self.update_info(self.player.get_info())
-                self.master.simulateKeyPress()
+            if self.master._stdscr :
+                self.master._stdscr.timeout(10000)
             time.sleep(1)
 
     def setup(self):
         # setup color statu bar bottom
         self.master.status_bar.set_color(py_cui.BLACK_ON_GREEN)
+        #-------------
         # grid station
         self.pnl_stations = \
             self.master.add_scroll_menu_extra('STATIONS', 0, 0,
@@ -61,11 +62,15 @@ class App:
         self.pnl_stations.set_item_selected_color(py_cui.BLACK_ON_GREEN)
         # radio active
         self.pnl_stations.set_item_active_color(py_cui.BLACK_ON_WHITE)
+        # activate focus on station panel
+        self.master.move_focus(self.pnl_stations)
 
-
+        #-------------
+        # logo 
         self.master.add_block_label(str(self.get_logo_text()), 1, 5, 4, 4)
 
 
+        #-------------
         # help messages
         msg = []
         msg.append('⇅ select')
@@ -77,9 +82,8 @@ class App:
         msg = " " + " | ".join(msg)
         # help message on status bar
         self.pnl_stations.set_focus_text(msg)
-        # activate focus on station panel
-        self.master.move_focus(self.pnl_stations)
 
+        #-------------
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
                                                     column_span=9)
@@ -90,6 +94,8 @@ class App:
         # slider
         self.slider = self.master.add_slider('volume', 8, 0, column_span=9,
                                              min_val=0, max_val=100, step=5)
+
+        self.set_volume(0)
         # -----------
         # handlers
         # -----------
@@ -99,7 +105,6 @@ class App:
         # mute/unmute
         self.pnl_stations.add_key_command(py_cui.keys.KEY_M_LOWER,
                                           self.toggle_mute)
-
         # update info
         self.pnl_stations.add_key_command(py_cui.keys.KEY_I_LOWER,
                                           self.update_station_info)
@@ -112,9 +117,6 @@ class App:
         # volume down
         self.pnl_stations.add_key_command(py_cui.keys.KEY_LEFT_ARROW,
                                           self.set_volume_down)
-        # scroll down
-        # self.pnl_stations.add_key_command(py_cui.keys.KEY_PAGE_UP,
-        #                                  self.pnl_stations.scroll_down)
         # populate station grid
         for station in self.sm.stations:
             self.pnl_stations.add_item('{}'.format(station))
@@ -176,7 +178,7 @@ class App:
         out += "█▀▄ █▀█ █▄▀ █ █▄█\n"
         out += "\n"
         out += "█▀█ █   ▄▀█ █▄█ █▀▀ █▀█\n"
-        out += "█▀▀ █▄▄ █▀█  █░ ██▄ █▀▄\n"
+        out += "█▀▀ █▄▄ █▀█  █  ██▄ █▀▄\n"
         return out
 
 

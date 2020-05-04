@@ -18,11 +18,6 @@ class PyCUIExtra(py_cui.PyCUI):
         super().__init__(*args, **keywords)
         self._title_bar.set_color(py_cui.BLACK_ON_GREEN)
 
-    def simulateKeyPress(self):
-        logging.info('thread called')
-        self._stdscr.timeout(1000)
-
-
     def add_scroll_menu_extra(self, title, row, column, row_span=1,
                               column_span=1, padx=1, pady=0):
 
