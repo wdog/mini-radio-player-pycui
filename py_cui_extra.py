@@ -2,6 +2,7 @@ import py_cui
 import curses
 import logging
 from datetime import datetime
+import time
 """
 File: py_cui_extra.py
 Author: wdog
@@ -16,6 +17,11 @@ class PyCUIExtra(py_cui.PyCUI):
         logging.info("PuCUIExtra")
         super().__init__(*args, **keywords)
         self._title_bar.set_color(py_cui.BLACK_ON_GREEN)
+
+    def simulateKeyPress(self):
+        logging.info('thread called')
+        self._stdscr.timeout(1000)
+
 
     def add_scroll_menu_extra(self, title, row, column, row_span=1,
                               column_span=1, padx=1, pady=0):

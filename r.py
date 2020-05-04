@@ -8,6 +8,7 @@ Description: Main Mini Radio Player
 
 # Import the lib
 import py_cui
+import curses
 import logging
 from station import Station
 from player import Player
@@ -15,6 +16,7 @@ from py_cui_extra import PyCUIExtra
 import threading
 from datetime import datetime
 import time
+import os
 
 
 class App:
@@ -25,6 +27,7 @@ class App:
     current_volume = 0
 
     def __init__(self, master):
+
         # create station Manager
         self.sm = Station()
         # create player
@@ -41,6 +44,7 @@ class App:
             # self.update_info()
             if self.player.is_playing:
                 self.update_info(self.player.get_info())
+                self.master.simulateKeyPress()
             time.sleep(1)
 
     def setup(self):
@@ -59,7 +63,7 @@ class App:
         self.pnl_stations.set_item_active_color(py_cui.BLACK_ON_WHITE)
 
 
-        self.master.add_block_label(str(self.get_logo_text()), 0, 5, 4, 4)
+        self.master.add_block_label(str(self.get_logo_text()), 1, 5, 4, 4)
 
 
         # help messages
@@ -165,14 +169,14 @@ class App:
 
     def get_logo_text(self):
         out = ""
-        out += "█▀▄▀█ █ █▄░█ █\n "
-        out += "█░▀░█ █ █░▀█ █\n "
+        out += "█▀▄▀█ █ █▄ █ █\n "
+        out += "█ ▀ █ █ █ ▀█ █\n "
         out += "\n"
         out += "█▀█ ▄▀█ █▀▄ █ █▀█\n"
         out += "█▀▄ █▀█ █▄▀ █ █▄█\n"
         out += "\n"
-        out += "█▀█ █░░ ▄▀█ █▄█ █▀▀ █▀█\n"
-        out += "█▀▀ █▄▄ █▀█ ░█░ ██▄ █▀▄\n"
+        out += "█▀█ █   ▄▀█ █▄█ █▀▀ █▀█\n"
+        out += "█▀▀ █▄▄ █▀█  █░ ██▄ █▀▄\n"
         return out
 
 
@@ -182,6 +186,7 @@ if __name__ == '__main__':
                         level=logging.DEBUG)
     logging.info("\n----\n")
     # 9 rows x 3 cols
+    os.environ.setdefault('ESCDELAY','100')
     root = PyCUIExtra(9, 9)
     root.set_title('Mini-Radio-Player 3.0')
     root.toggle_unicode_borders()
