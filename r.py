@@ -8,7 +8,6 @@ Description: Main Mini Radio Player
 
 # Import the lib
 import py_cui
-import curses
 import logging
 from station import Station
 from player import Player
@@ -43,14 +42,14 @@ class App:
         while True:
             if self.player.is_playing:
                 self.update_info(self.player.get_info())
-            if self.master._stdscr :
+            if self.master._stdscr:
                 self.master._stdscr.timeout(10000)
             time.sleep(1)
 
     def setup(self):
         # setup color statu bar bottom
         self.master.status_bar.set_color(py_cui.BLACK_ON_GREEN)
-        #-------------
+        # -------------
         # grid station
         self.pnl_stations = \
             self.master.add_scroll_menu_extra('STATIONS', 0, 0,
@@ -65,12 +64,11 @@ class App:
         # activate focus on station panel
         self.master.move_focus(self.pnl_stations)
 
-        #-------------
-        # logo 
+        # -------------
+        # logo
         self.master.add_block_label(str(self.get_logo_text()), 1, 5, 4, 4)
 
-
-        #-------------
+        # -------------
         # help messages
         msg = []
         msg.append('⇅ select')
@@ -83,7 +81,7 @@ class App:
         # help message on status bar
         self.pnl_stations.set_focus_text(msg)
 
-        #-------------
+        # -------------
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
                                                     column_span=9)
@@ -120,7 +118,6 @@ class App:
         # populate station grid
         for station in self.sm.stations:
             self.pnl_stations.add_item('{}'.format(station))
-
 
     def toggle_mute(self):
         is_muted = self.player.toggle_mute()
@@ -188,7 +185,7 @@ if __name__ == '__main__':
                         level=logging.DEBUG)
     logging.info("\n----\n")
     # 9 rows x 3 cols
-    os.environ.setdefault('ESCDELAY','100')
+    os.environ.setdefault('ESCDELAY', '100')
     root = PyCUIExtra(9, 9)
     root.set_title('Mini-Radio-Player 3.0')
     root.toggle_unicode_borders()
