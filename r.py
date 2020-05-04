@@ -8,10 +8,15 @@ Description: Main Mini Radio Player
 
 # Import the lib
 import py_cui
+import curses
 import logging
 from station import Station
 from player import Player
 from py_cui_extra import PyCUIExtra
+import threading
+from datetime import datetime
+import time
+import os
 
 
 class App:
@@ -19,9 +24,10 @@ class App:
     # object radio selected
     current_station = -1
     # initial volume
-    current_volume = 0
+    current_volume = 30
 
     def __init__(self, master):
+
         # create station Manager
         self.sm = Station()
         # create player
@@ -29,21 +35,42 @@ class App:
         # in the end the Tui
         self.master = master
         self.setup()
+        thread = threading.Thread(target=self.thread_function, args=())
+        thread.daemon = True
+        thread.start()
+
+    def thread_function(self):
+        while True:
+            if self.player.is_playing:
+                self.update_info(self.player.get_info())
+            if self.master._stdscr :
+                self.master._stdscr.timeout(10000)
+            time.sleep(1)
 
     def setup(self):
         # setup color statu bar bottom
         self.master.status_bar.set_color(py_cui.BLACK_ON_GREEN)
+        #-------------
         # grid station
         self.pnl_stations = \
             self.master.add_scroll_menu_extra('STATIONS', 0, 0,
                                               row_span=5,
-                                              column_span=3)
+                                              column_span=5)
         # setup color of station panel
         self.pnl_stations.set_color(py_cui.GREEN_ON_BLACK)
         # current row
         self.pnl_stations.set_item_selected_color(py_cui.BLACK_ON_GREEN)
         # radio active
         self.pnl_stations.set_item_active_color(py_cui.BLACK_ON_WHITE)
+        # activate focus on station panel
+        self.master.move_focus(self.pnl_stations)
+
+        #-------------
+        # logo 
+        self.master.add_block_label(str(self.get_logo_text()), 1, 5, 4, 4)
+
+
+        #-------------
         # help messages
         msg = []
         msg.append('⇅ select')
@@ -55,19 +82,20 @@ class App:
         msg = " " + " | ".join(msg)
         # help message on status bar
         self.pnl_stations.set_focus_text(msg)
-        # activate focus on station panel
-        self.master.move_focus(self.pnl_stations)
 
+        #-------------
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
-                                                    column_span=3)
+                                                    column_span=9)
 
         # setup color of info panel
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
 
         # slider
-        self.slider = self.master.add_slider('volume', 8, 0, column_span=3,
+        self.slider = self.master.add_slider('volume', 8, 0, column_span=9,
                                              min_val=0, max_val=100, step=5)
+
+        self.set_volume(0)
         # -----------
         # handlers
         # -----------
@@ -77,7 +105,6 @@ class App:
         # mute/unmute
         self.pnl_stations.add_key_command(py_cui.keys.KEY_M_LOWER,
                                           self.toggle_mute)
-
         # update info
         self.pnl_stations.add_key_command(py_cui.keys.KEY_I_LOWER,
                                           self.update_station_info)
@@ -90,14 +117,10 @@ class App:
         # volume down
         self.pnl_stations.add_key_command(py_cui.keys.KEY_LEFT_ARROW,
                                           self.set_volume_down)
-        # scroll down
-        # self.pnl_stations.add_key_command(py_cui.keys.KEY_PAGE_UP,
-        #                                  self.pnl_stations.scroll_down)
         # populate station grid
         for station in self.sm.stations:
             self.pnl_stations.add_item('{}'.format(station))
 
-        self.update_info()
 
     def toggle_mute(self):
         is_muted = self.player.toggle_mute()
@@ -120,13 +143,15 @@ class App:
 
     def update_info(self, info=False):
         self.pnl_info.clear()
-
         if not self.player.is_playing:
             info = ['STOPPED', '', '']
 
-        self.pnl_info.add_item('NOW:'.ljust(10, ' ') + info[0])
-        self.pnl_info.add_item('GENERE:'.ljust(10, ' ') + info[1])
-        self.pnl_info.add_item('RADIO:'.ljust(10, ' ') + info[2])
+        self.pnl_info.add_item('NOW:'.ljust(8, ' ') + info[0])
+        self.pnl_info.add_item('GENERE:'.ljust(8, ' ') + info[1])
+        self.pnl_info.add_item('RADIO:'.ljust(8, ' ') + info[2])
+        self.pnl_info.add_item("TIME:   {}".format(
+                               datetime.now().strftime('%X')))
+        # logging.info(self.pnl_info._view_items)
 
     def exit_application(self):
         exit()
@@ -144,14 +169,27 @@ class App:
         # player
         self.player.set_volume(self.current_volume)
 
+    def get_logo_text(self):
+        out = ""
+        out += "█▀▄▀█ █ █▄ █ █\n "
+        out += "█ ▀ █ █ █ ▀█ █\n "
+        out += "\n"
+        out += "█▀█ ▄▀█ █▀▄ █ █▀█\n"
+        out += "█▀▄ █▀█ █▄▀ █ █▄█\n"
+        out += "\n"
+        out += "█▀█ █   ▄▀█ █▄█ █▀▀ █▀█\n"
+        out += "█▀▀ █▄▄ █▀█  █  ██▄ █▀▄\n"
+        return out
+
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="app.log",
-                        format='%(name)s [%(levelname)s] %(message)s',
-                        datefmt='%H:%M:%S', level=logging.DEBUG)
+    logging.basicConfig(filename="app.log", format='%(asctime)s - %(name)s - '
+                        '%(levelname)s: %(message)s', datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
     logging.info("\n----\n")
     # 9 rows x 3 cols
-    root = PyCUIExtra(9, 3)
+    os.environ.setdefault('ESCDELAY','100')
+    root = PyCUIExtra(9, 9)
     root.set_title('Mini-Radio-Player 3.0')
     root.toggle_unicode_borders()
     app = App(root)
