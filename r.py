@@ -15,20 +15,18 @@ from py_cui_extra import PyCUIExtra
 import threading
 from datetime import datetime
 import time
-import os
 
 
 class App:
 
     # object radio selected
     current_station = -1
-    # initial volume
-    current_volume = 30
 
     def __init__(self, master):
 
         # create station Manager
         self.sm = Station()
+
         # create player
         self.player = Player()
         # in the end the Tui
@@ -93,7 +91,6 @@ class App:
         self.slider = self.master.add_slider('volume', 8, 0, column_span=9,
                                              min_val=0, max_val=100, step=5)
 
-        self.set_volume(0)
         # -----------
         # handlers
         # -----------
@@ -119,6 +116,20 @@ class App:
         for station in self.sm.stations:
             self.pnl_stations.add_item('{}'.format(station))
 
+        # ------------------
+        # get stored setting
+        # ------------------
+        self.settings = self.sm.get_settings()
+
+        logging.debug(self.settings)
+
+        if 'volume' in self.settings:
+            self.current_volume = int(self.settings['volume'])
+        else:
+            self.current_volume = 0
+        # set stored volume
+        self.set_volume(0)
+
     def toggle_mute(self):
         is_muted = self.player.toggle_mute()
         self.slider.disable(is_muted)
@@ -130,10 +141,6 @@ class App:
         self.player.load_station(self.current_station)
         self.player.toggle()
         self.update_info(self.player.get_info())
-
-        self.current_volume = self.player.get_volume()
-        # get old volume
-        self.set_volume(0)
 
     def update_station_info(self):
         self.update_info(self.player.get_info())
@@ -154,9 +161,11 @@ class App:
         exit()
 
     def set_volume_up(self):
+        # workaround cannot pass args to callback
         self.set_volume(1)
 
     def set_volume_down(self):
+        # workaround cannot pass args to callback
         self.set_volume(-1)
 
     def set_volume(self, direction):
@@ -165,6 +174,8 @@ class App:
             self.slider.set_slider_value(self.current_volume, direction)
         # player
         self.player.set_volume(self.current_volume)
+        # store value into db
+        self.sm.store_setting('volume', self.current_volume)
 
     def get_logo_text(self):
         out = ""
@@ -185,7 +196,6 @@ if __name__ == '__main__':
                         level=logging.DEBUG)
     logging.info("\n----\n")
     # 9 rows x 3 cols
-    os.environ.setdefault('ESCDELAY', '100')
     root = PyCUIExtra(9, 9)
     root.set_title('Mini-Radio-Player 3.0')
     root.toggle_unicode_borders()
