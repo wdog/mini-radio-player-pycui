@@ -59,8 +59,6 @@ class App:
         self.pnl_stations.set_item_selected_color(py_cui.BLACK_ON_GREEN)
         # radio active
         self.pnl_stations.set_item_active_color(py_cui.BLACK_ON_WHITE)
-        # activate focus on station panel
-        self.master.move_focus(self.pnl_stations)
 
         # -------------
         # logo
@@ -77,7 +75,9 @@ class App:
         msg.append('q quit')
         msg = " " + " | ".join(msg)
         # help message on status bar
-        self.pnl_stations.set_focus_text(msg)
+        self.pnl_stations.set_help_text(msg)
+        # activate focus on station panel
+        self.master.move_focus(self.pnl_stations)
 
         # -------------
         # now playing grid

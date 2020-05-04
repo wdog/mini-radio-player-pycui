@@ -5,8 +5,16 @@ https://pypi.org/project/python-vlc/
 
 https://github.com/jwlodek/py_cui
 
-# with python3 virtualenv
 
+
+![](images/screenshot.jpg)
+
+
+# Install
+
+Using python3 virtualenv
+
+- debian : python3-venv
 
 ```bash
 git clone https://github.com/wdog/mini-radio-player-pycui/
