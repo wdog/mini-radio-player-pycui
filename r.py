@@ -71,7 +71,6 @@ class App:
         msg.append('enter play/stop')
         msg.append('⇄ volume')
         msg.append('m mute')
-        msg.append('i info')
         msg.append('q quit')
         msg = " " + " | ".join(msg)
         # help message on status bar

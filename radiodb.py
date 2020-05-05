@@ -21,7 +21,8 @@ class RadioDB:
             c.execute("CREATE TABLE IF NOT EXISTS stations ("
                       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                       "name TEXT NOT NULL UNIQUE,"
-                      "url TEXT NOT NULL"
+                      "url TEXT NOT NULL,"
+                      "position INTEGER"
                       ")")
             c = db.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS settings ("
@@ -73,9 +74,11 @@ class RadioDB:
 
         try:
             rows = json.load(open('radio.json'))
-            query = "insert into stations (name, url) values (?,?)"
+            query = "insert into stations (name, url, position) values (?,?,?)"
+            position = 1
             for station in rows:
-                c.execute(query, (station['name'], station['url']))
+                c.execute(query, (station['name'], station['url'], position))
+                position += 1
         except Exception as e:
             logging.error(e)
             pass
