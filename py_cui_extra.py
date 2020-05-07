@@ -1,8 +1,6 @@
 import py_cui
 import curses
 import logging
-from datetime import datetime
-import time
 """
 File: py_cui_extra.py
 Author: wdog

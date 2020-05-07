@@ -15,6 +15,12 @@ class Station:
         for row in self.radio_db.read_table_radio():
             self.stations.append(RadioStation(row))
 
+    def get_stations(self):
+        stations = []
+        for row in self.radio_db.read_table_radio():
+            stations.append(RadioStation(row))
+        return stations
+
     def get_settings(self):
         settings = {}
         for row in self.radio_db.get_settings():
@@ -23,3 +29,6 @@ class Station:
 
     def store_setting(self, key, value):
         self.radio_db.store_setting(key, value)
+
+    def add_view(self, station_id):
+        self.radio_db.add_view(station_id)

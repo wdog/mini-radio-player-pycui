@@ -22,7 +22,7 @@ class RadioDB:
                       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                       "name TEXT NOT NULL UNIQUE,"
                       "url TEXT NOT NULL,"
-                      "position INTEGER"
+                      "views INTEGER"
                       ")")
             c = db.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS settings ("
@@ -39,7 +39,7 @@ class RadioDB:
         db = sqlite3.connect(self._dbfilename)
         db.row_factory = sqlite3.Row
         c = db.cursor()
-        c.execute('SELECT * from stations')
+        c.execute('SELECT * from stations order by views desc')
         records = c.fetchall()
         c.close()
         return records
@@ -74,13 +74,27 @@ class RadioDB:
 
         try:
             rows = json.load(open('radio.json'))
-            query = "insert into stations (name, url, position) values (?,?,?)"
-            position = 1
+            query = "insert into stations (name, url, views) values (?,?,?)"
+            initial_views = 0
             for station in rows:
-                c.execute(query, (station['name'], station['url'], position))
-                position += 1
+                c.execute(query, (station['name'],
+                          station['url'], initial_views))
         except Exception as e:
             logging.error(e)
+            pass
+        db.commit()
+        db.close()
+
+    def add_view(self, station_id):
+        db = sqlite3.connect(self._dbfilename)
+        c = db.cursor()
+        try:
+            c.execute("update stations "
+                      "set views = views+1 "
+                      "where id={}".format(station_id))
+
+        except Error as e:
+            logging.info(e)
             pass
         db.commit()
         db.close()

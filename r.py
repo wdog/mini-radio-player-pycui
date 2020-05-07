@@ -81,7 +81,8 @@ class App:
         # -------------
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
-                                                    column_span=9)
+                                                    column_span=9,
+                                                    selectable=False)
 
         # setup color of info panel
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
@@ -99,6 +100,9 @@ class App:
         # mute/unmute
         self.pnl_stations.add_key_command(py_cui.keys.KEY_M_LOWER,
                                           self.toggle_mute)
+        # popup help
+        self.pnl_stations.add_key_command(py_cui.keys.KEY_H_LOWER,
+                                          self.help_menu)
         # update info
         self.pnl_stations.add_key_command(py_cui.keys.KEY_I_LOWER,
                                           self.update_station_info)
@@ -113,8 +117,8 @@ class App:
                                           self.set_volume_down)
         # populate station grid
         for station in self.sm.stations:
-            self.pnl_stations.add_item('{}'.format(station))
-
+            self.pnl_stations.add_item('{} #{}'.format(station.name,
+                                       station.views))
         # ------------------
         # get stored setting
         # ------------------
@@ -134,12 +138,18 @@ class App:
         self.slider.disable(is_muted)
 
     def play(self):
-        idx = self.pnl_stations.get_selected_item()
-        self.current_station = self.sm.stations[idx]
+        try:
+            idx = self.pnl_stations.get_selected_item()
+            self.current_station = self.sm.stations[idx]
+        except Exception:
+            exit
 
         self.player.load_station(self.current_station)
         self.player.toggle()
         self.update_info(self.player.get_info())
+        if self.player.is_playing:
+            self.sm.add_view(self.current_station.id)
+            logging.info(self.current_station.__dict__)
 
     def update_station_info(self):
         self.update_info(self.player.get_info())
@@ -187,6 +197,20 @@ class App:
         out += "█▀█ █   ▄▀█ █▄█ █▀▀ █▀█\n"
         out += "█▀▀ █▄▄ █▀█  █  ██▄ █▀▄\n"
         return out
+
+    def help_menu(self):
+        msg_help = "m) mute\n"
+        msg_help += "^ Select Station\n"
+        msg_help += "<> Volume up/down\n"
+        msg_help += "q) quit\n"
+        msg_help += "<esc> to exit menu\n"
+        msg_help += "\n"
+
+        self.master.show_message_popup('HELP', msg_help)
+
+    def action_menu(self, element):
+        logging.info(element)
+        pass
 
 
 if __name__ == '__main__':

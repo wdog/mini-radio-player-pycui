@@ -3,8 +3,7 @@
 
 class RadioStation():
     def __init__(self, s):
+        self.id = s['id']
         self.name = s['name']
         self.url = s['url']
-
-    def __str__(self):
-        return self.name
+        self.views = s['views']
