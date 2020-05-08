@@ -81,8 +81,7 @@ class App:
         # -------------
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
-                                                    column_span=9,
-                                                    selectable=False)
+                                                    column_span=9)
 
         # setup color of info panel
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
