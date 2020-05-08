@@ -42,7 +42,7 @@ class App:
                 self.update_info(self.player.get_info())
             if self.master._stdscr:
                 self.master._stdscr.timeout(10000)
-            time.sleep(1)
+            time.sleep(10)
 
     def setup(self):
         # setup color statu bar bottom
@@ -115,7 +115,7 @@ class App:
         self.pnl_stations.add_key_command(py_cui.keys.KEY_LEFT_ARROW,
                                           self.set_volume_down)
         # populate station grid
-        for station in self.sm.get_stations():
+        for station in self.sm.stations:
             self.pnl_stations.add_item('{}: {}'.format(station.id,
                                        station.name))
         # ------------------
@@ -139,9 +139,7 @@ class App:
     def play(self):
         try:
             idx = self.pnl_stations.get_selected_item()
-            # logging.info(idx)
-            stations = self.sm.get_stations()
-            self.current_station = stations[idx]
+            self.current_station = self.sm.stations[idx]
             self.pnl_stations.set_selected(idx)
         except Exception:
             exit
@@ -156,7 +154,7 @@ class App:
     def update_info(self, info=False):
         if not self.player.is_playing:
             info = ['STOPPED', '', '']
-
+        self.pnl_info.clear()
         self.pnl_info.add_item('NOW:'.ljust(8, ' ') + info[0])
         self.pnl_info.add_item('GENERE:'.ljust(8, ' ') + info[1])
         self.pnl_info.add_item('RADIO:'.ljust(8, ' ') + info[2])
