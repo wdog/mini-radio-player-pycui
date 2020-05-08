@@ -15,11 +15,11 @@ class Station:
         for row in self.radio_db.read_table_radio():
             self.stations.append(RadioStation(row))
 
-    def get_stations(self):
-        stations = []
-        for row in self.radio_db.read_table_radio():
-            stations.append(RadioStation(row))
-        return stations
+#    def get_stations(self):
+#        stations = []
+#        for row in self.radio_db.read_table_radio():
+#            stations.append(RadioStation(row))
+#        return stations
 
     def get_settings(self):
         settings = {}
