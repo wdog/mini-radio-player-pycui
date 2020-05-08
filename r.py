@@ -81,8 +81,7 @@ class App:
         # -------------
         # now playing grid
         self.pnl_info = self.master.add_scroll_menu('NOW', 5, 0, row_span=3,
-                                                    column_span=9,
-                                                    selectable=False)
+                                                    column_span=9)
 
         # setup color of info panel
         self.pnl_info.set_color(py_cui.RED_ON_BLACK)
@@ -197,12 +196,14 @@ class App:
         return out
 
     def help_menu(self):
-        msg_help = "m) mute\n"
-        msg_help += "^ Select Station\n"
-        msg_help += "<> Volume up/down\n"
-        msg_help += "q) quit\n"
-        msg_help += "<esc> to exit menu\n"
-        msg_help += "\n"
+        msg_help = "\nm mute".ljust(10, '.')
+        msg_help += "\n2".ljust(10, '.')
+        msg_help += "\n3".ljust(10, '.')
+        msg_help += "\n4".ljust(10, '.')
+        msg_help += "\n5".ljust(10, '.')
+        msg_help += "\n6".ljust(10, '.')
+        msg_help += "\n7".ljust(10, '.')
+        msg_help += "\nabcdefg_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_".ljust(10, '.')
 
         self.master.show_message_popup('HELP', msg_help)
 

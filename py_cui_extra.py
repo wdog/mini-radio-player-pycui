@@ -64,6 +64,16 @@ class PyCUIExtra(py_cui.PyCUI):
             self.set_selected_widget(id)
         return slider
 
+    def show_message_popup(self, title, text, color=py_cui.YELLOW_ON_BLACK):
+        logging.info('new popup')
+        self._popup = MultilineMessagePopup(self, title, text,
+                                            color,
+                                            self._renderer,
+                                            self._logger)
+        self._logger.debug('Opened {} popup with title {}'
+                           .format(str(type(self._popup)),
+                                   self._popup.get_title()))
+
 
 class ScrollMenuColors(py_cui.widgets.ScrollMenu):
 
@@ -199,3 +209,56 @@ class Slider(py_cui.widgets.Label):
             self._disabled = True
         else:
             self._disabled = False
+
+
+class MultilineMessagePopup(py_cui.popups.MessagePopup):
+
+    def __init__(self, root, title, text, color, renderer, logger):
+        super().__init__(root, title, text, color, renderer, logger)
+
+    def _draw(self):
+
+        self._text_lines = self._text.splitlines()
+
+        logging.info(self._text_lines)
+        new_lines = []
+        for line in self._text_lines:
+            width = (self._stop_x - self._start_x)
+            if len(line) > width:
+                new_lines.append(line[0:width-5])
+                new_lines.append(line[width-5:])
+            else:
+                new_lines.append(line)
+
+        self._text_lines = new_lines
+        if len(self._text_lines) == 0:
+            self._text_lines.append('')
+
+        # limit to 5 row of text
+        # self._text_lines = self._text_lines[0:5]
+
+        logging.info("draw")
+        target_y = self._start_y+1
+        self._renderer.set_color_rules([])
+        self._renderer._set_bold()
+        self._renderer.set_color_mode(self._color)
+        self._renderer.draw_border(self, with_title=False)
+        self._renderer.draw_text(self, self._title, target_y,
+                                 centered=True, selected=True)
+        for line in self._text_lines:
+            target_y += 1
+            self._renderer.draw_text(self, line,  target_y,
+                                     centered=True, selected=True)
+        self._renderer.unset_color_mode(self._color)
+        self._renderer._unset_bold()
+        self._renderer.reset_cursor(self)
+
+    def get_absolute_start_pos(self):
+        root_height, root_width = self._root.get_absolute_size()
+#        logging.info(root_height)
+#        logging.info(root_width)
+        return int(root_width / 8), int(root_height / 4)
+
+    def get_absolute_stop_pos(self):
+        root_height, root_width = self._root.get_absolute_size()
+        return (int(7 * root_width / 8)), (int(3 * root_height / 4))
