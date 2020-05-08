@@ -72,16 +72,16 @@ class RadioDB:
         db = sqlite3.connect(self._dbfilename)
         c = db.cursor()
 
-        try:
-            rows = json.load(open('radio.json'))
-            query = "insert into stations (name, url, views) values (?,?,?)"
-            initial_views = 0
-            for station in rows:
+        rows = json.load(open('radio.json'))
+        query = "insert into stations (name, url, views) values (?,?,?)"
+        initial_views = 0
+        for station in rows:
+            try:
                 c.execute(query, (station['name'],
                           station['url'], initial_views))
-        except Exception as e:
-            logging.error(e)
-            pass
+            except Exception:
+                pass
+
         db.commit()
         db.close()
 

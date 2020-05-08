@@ -116,9 +116,9 @@ class App:
         self.pnl_stations.add_key_command(py_cui.keys.KEY_LEFT_ARROW,
                                           self.set_volume_down)
         # populate station grid
-        for station in self.sm.stations:
-            self.pnl_stations.add_item('{} #{}'.format(station.name,
-                                       station.views))
+        for station in self.sm.get_stations():
+            self.pnl_stations.add_item('{}: {}'.format(station.id,
+                                       station.name))
         # ------------------
         # get stored setting
         # ------------------
@@ -140,22 +140,21 @@ class App:
     def play(self):
         try:
             idx = self.pnl_stations.get_selected_item()
-            self.current_station = self.sm.stations[idx]
+            # logging.info(idx)
+            stations = self.sm.get_stations()
+            self.current_station = stations[idx]
+            self.pnl_stations.set_selected(idx)
         except Exception:
             exit
 
         self.player.load_station(self.current_station)
         self.player.toggle()
         self.update_info(self.player.get_info())
-        if self.player.is_playing:
-            self.sm.add_view(self.current_station.id)
-            logging.info(self.current_station.__dict__)
 
     def update_station_info(self):
         self.update_info(self.player.get_info())
 
     def update_info(self, info=False):
-        self.pnl_info.clear()
         if not self.player.is_playing:
             info = ['STOPPED', '', '']
 
@@ -164,7 +163,6 @@ class App:
         self.pnl_info.add_item('RADIO:'.ljust(8, ' ') + info[2])
         self.pnl_info.add_item("TIME:   {}".format(
                                datetime.now().strftime('%X')))
-        # logging.info(self.pnl_info._view_items)
 
     def exit_application(self):
         exit()
